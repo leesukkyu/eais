@@ -4,9 +4,11 @@ import "./App.css";
 import $ from "jquery";
 import axios from "axios";
 import Icon from "@material-ui/core/Icon";
+import FileSaver from "file-saver";
 
 import NativeSelect from "@material-ui/core/NativeSelect";
 import Button from "@material-ui/core/Button";
+import "./addList.js";
 
 var url =
   "http://apis.data.go.kr/1611000/ArchPmsService/getApHsTpInfo?serviceKey=uu2nV0CiVbjDhdcZyHf0FmfnmNdXX45Af3Ukoih3pf4i1kKriVsxdGcmWjx7DBgGRFIlVYxhOmboQu4By9X1vQ%3D%3D";
@@ -24,6 +26,7 @@ class App extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.$httpLoadArchInfo = this.$httpLoadArchInfo.bind(this);
+    this.$searchBubjungdong = this.$searchBubjungdong.bind(this);
   }
 
   componentDidMount() {
@@ -117,6 +120,39 @@ class App extends React.Component {
       });
   }
 
+  $searchBubjungdong() {
+    axios
+      .get(
+        "https://gist.githubusercontent.com/FinanceData/4b0a6e1818cea9e77496e57b84bb4565/raw/b682e526c7e9ebd1c30f688b789aa018f396e1c9/%25EB%25B2%2595%25EC%25A0%2595%25EB%258F%2599%25EC%25BD%2594%25EB%2593%259C%25EC%25A0%2584%25EC%25B2%25B4%25EC%259E%2590%25EB%25A3%258C.txt"
+      )
+      .then(function(rs) {
+        var rowList = rs.data.split("\n");
+        var colList;
+        var map = {};
+        for (var i in rowList) {
+          colList = rowList[i].split("	");
+          for (var j in colList) {
+            if (
+              colList[2] == "존재" &&
+              colList[0][7] == "0" &&
+              colList[0][8] == "0" &&
+              colList[0][9] == "0"
+            ) {
+              map[colList[0]] = colList[1];
+            }
+          }
+        }
+        debugger;
+        var blob = new Blob([JSON.stringify(map)], {
+          type: "text/plain;charset=utf-8"
+        });
+        FileSaver.saveAs(blob, "hello world.txt");
+
+        FileSaver.saveAs();
+        console.log(map);
+      });
+  }
+
   handleChange(name, event) {
     this.setState(
       {
@@ -200,6 +236,8 @@ class App extends React.Component {
           <Button color="secondary" onClick={this.$httpLoadArchInfo}>
             검색하기<Icon>search</Icon>
           </Button>
+
+          <Button onClick={this.$searchBubjungdong}>법정동 검색하기</Button>
         </div>
       </div>
     );
