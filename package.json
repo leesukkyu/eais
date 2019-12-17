@@ -1,0 +1,24 @@
+{
+  "name": "eais",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leesukkyu/eais.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leesukkyu/eais/issues"
+  },
+  "homepage": "https://github.com/leesukkyu/eais#readme",
+  "dependencies": {
+    "@material-ui/core": "^4.8.0",
+    "create-react-app": "^3.3.0"
+  }
+}
