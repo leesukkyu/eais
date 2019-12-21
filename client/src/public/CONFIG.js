@@ -9,7 +9,6 @@ export const DONG_CODE_URL =
   "http://openapi.nsdi.go.kr/nsdi/eios/service/rest/AdmService/admDongList.json";
 export const DONG_CODE_KEY = "91afccaa8d7f499151ee3b";
 
-export const ARCH_URL =
-  "http://apis.data.go.kr/1611000/ArchPmsService/getApHsTpInfo";
+export const ARCH_URL = "/api/getList";
 export const ARCH_KEY =
   "uu2nV0CiVbjDhdcZyHf0FmfnmNdXX45Af3Ukoih3pf4i1kKriVsxdGcmWjx7DBgGRFIlVYxhOmboQu4By9X1vQ%3D%3D";

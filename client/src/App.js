@@ -26,7 +26,6 @@ import moment from "moment";
 import TablePagination from "@material-ui/core/TablePagination";
 
 import {
-  SEARCH_MONTH,
   SIDO_CODE_URL,
   SIDO_CODE_KEY,
   SIGOON_CODE_URL,
@@ -41,6 +40,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchMonth: 6,
+
       sidoCode: "",
       sidoList: [],
       sigoonCode: "",
@@ -65,6 +66,7 @@ class App extends React.Component {
     this.onClickChips = this.onClickChips.bind(this);
     this.onClickSelectSearchBtn = this.onClickSelectSearchBtn.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
+    this.onChangeSearchMonth = this.onChangeSearchMonth.bind(this);
   }
 
   componentDidMount() {
@@ -101,7 +103,6 @@ class App extends React.Component {
         });
       }
     }
-    console.log(searchResultList);
     this.setState({
       ...this.state,
       searchResultList
@@ -132,6 +133,28 @@ class App extends React.Component {
         this.$httpLoadArchInfo();
       }
     );
+  }
+
+  onChangeSearchMonth(e) {
+    const { searchCode } = this.state;
+    if (searchCode) {
+      this.setState(
+        {
+          ...this.state,
+          searchMonth: e.target.value,
+          tableList: [],
+          tablePage: 0
+        },
+        () => {
+          this.$httpLoadArchInfo();
+        }
+      );
+    } else {
+      this.setState({
+        ...this.state,
+        searchMonth: e.target.value
+      });
+    }
   }
 
   $httpLoadSidoCodeList() {
@@ -191,7 +214,7 @@ class App extends React.Component {
   }
 
   $httpLoadArchInfo() {
-    const { searchCode, tablePage } = this.state;
+    const { searchCode, tablePage, searchMonth } = this.state;
     axios
       .get(ARCH_URL, {
         params: {
@@ -202,7 +225,7 @@ class App extends React.Component {
           bun: "",
           ji: "",
           startDate: moment()
-            .subtract(SEARCH_MONTH, "months")
+            .subtract(+searchMonth, "months")
             .format("YYYYMMDD"),
           endDate: moment().format("YYYYMMDD"),
           numOfRows: "10",
@@ -210,11 +233,17 @@ class App extends React.Component {
         }
       })
       .then(rs => {
-        if (rs.data.response.body.items && rs.data.response.body.items.item) {
+        if (rs.data.items[0]) {
           this.setState({
             ...this.state,
-            tableList: rs.data.response.body.items.item,
-            tableTotalCount: rs.data.response.body.totalCount
+            tableList: rs.data.items[0].item,
+            tableTotalCount: rs.data.totalCount[0]
+          });
+        } else {
+          this.setState({
+            ...this.state,
+            tableList: [],
+            tableTotalCount: 0
           });
         }
       });
@@ -227,6 +256,7 @@ class App extends React.Component {
         [name]: event.target.value
       },
       () => {
+        const { searchCode } = this.state;
         if (name === "sidoCode") {
           this.$httpLoadSigoonCodeList();
         } else if (name === "sigoonCode") {
@@ -253,7 +283,27 @@ class App extends React.Component {
     return (
       <div>
         <div style={{ padding: "25px" }}>
-          <div style={{ margin: "10px" }}>최근 {SEARCH_MONTH}개월간 검색</div>
+          <div style={{ margin: "10px" }}>
+            최근
+            <NativeSelect
+              value={state.searchMonth}
+              onChange={this.onChangeSearchMonth}
+            >
+              <option value="1">1개월</option>
+              <option value="2">2개월</option>
+              <option value="3">3개월</option>
+              <option value="4">4개월</option>
+              <option value="5">5개월</option>
+              <option value="6">6개월</option>
+              <option value="7">7개월</option>
+              <option value="8">8개월</option>
+              <option value="9">9개월</option>
+              <option value="10">10개월</option>
+              <option value="11">11개월</option>
+              <option value="12">12개월</option>
+            </NativeSelect>
+            개월간 검색
+          </div>
           <div>
             <NativeSelect
               style={{
@@ -433,6 +483,7 @@ class App extends React.Component {
                 </TableFooter>
               </Table>
             </TableContainer>
+            {!tableTotalCount ? <div>데이터가 없습니다.</div> : null}
           </div>
         </div>
       </div>
