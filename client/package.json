@@ -10,6 +10,7 @@
     "axios": "^0.19.0",
     "file-saver": "^2.0.2",
     "jquery": "^3.4.1",
+    "moment": "^2.24.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0"
@@ -35,6 +36,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "http://apis.data.go.kr"
+  }
 }
