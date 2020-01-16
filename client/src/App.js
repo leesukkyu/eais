@@ -19,7 +19,7 @@ import TableFooter from "@material-ui/core/TableFooter";
 
 import Paper from "@material-ui/core/Paper";
 
-import bubjungdong from "./public/ADDRESS_DB.js";
+import bubjungdongList from "./public/ADDRESS_DB.js";
 
 import moment from "moment";
 
@@ -91,15 +91,15 @@ class App extends React.Component {
   onClickBubjungdongSearchBtn() {
     const { searchStr } = this.state;
     const searchResultList = [];
-    for (var i in bubjungdong) {
+    for (var i in bubjungdongList) {
       if (
-        bubjungdong[i].indexOf(searchStr) !== -1 &&
+        bubjungdongList[i].indexOf(searchStr) !== -1 &&
         !(i[7] == "0" && i[8] == "0" && i[9] == "0")
       ) {
         // 현재는 동까지 정보가 입력되어야만 검색 가능
         searchResultList.push({
           code: i,
-          name: bubjungdong[i]
+          name: bubjungdongList[i]
         });
       }
     }
@@ -408,7 +408,8 @@ class App extends React.Component {
           </div>
           <div
             style={{
-              marginTop: "10px"
+              marginTop: "10px",
+              minWidth: "1400px"
             }}
           >
             <TableContainer component={Paper}>
@@ -435,6 +436,10 @@ class App extends React.Component {
                     <TableCell>실제착공일</TableCell>
                     <TableCell>건축허가일</TableCell>
                     <TableCell>사용승인일</TableCell>
+
+                    <TableCell>실호세대수</TableCell>
+                    <TableCell>실호세대수면적</TableCell>
+
                     <TableCell>생성일자</TableCell>
                   </TableRow>
                 </TableHead>
@@ -461,6 +466,10 @@ class App extends React.Component {
                       <TableCell>{item.realStcnsDay}</TableCell>
                       <TableCell>{item.archPmsDay}</TableCell>
                       <TableCell>{item.useAprDay}</TableCell>
+
+                      <TableCell>{item.silHoHhldCnt}</TableCell>
+                      <TableCell>{item.silHoHhldArea}</TableCell>
+
                       <TableCell>{item.crtnDay}</TableCell>
                     </TableRow>
                   ))}
@@ -468,7 +477,7 @@ class App extends React.Component {
                 <TableFooter>
                   <TableRow>
                     <TablePagination
-                      colSpan={19}
+                      colSpan={21}
                       count={tableTotalCount}
                       rowsPerPage={10}
                       page={tablePage}
