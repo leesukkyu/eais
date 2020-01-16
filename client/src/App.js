@@ -92,10 +92,7 @@ class App extends React.Component {
     const { searchStr } = this.state;
     const searchResultList = [];
     for (var i in bubjungdongList) {
-      if (
-        bubjungdongList[i].indexOf(searchStr) !== -1 &&
-        !(i[7] == "0" && i[8] == "0" && i[9] == "0")
-      ) {
+      if (bubjungdongList[i].indexOf(searchStr) !== -1) {
         // 현재는 동까지 정보가 입력되어야만 검색 가능
         searchResultList.push({
           code: i,
