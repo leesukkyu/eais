@@ -46,6 +46,7 @@ class App extends React.Component {
       searchMonday: ""
     };
     this.onClickSearchBtn = this.onClickSearchBtn.bind(this);
+    this.onChangeMondaySelect = this.onChangeMondaySelect.bind(this);
   }
 
   componentDidMount() {
