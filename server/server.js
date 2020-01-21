@@ -38,5 +38,11 @@ app.use(function(err, req, res, next) {
   res.render("error");
 });
 
-app.listen(3000);
+try {
+  app.listen(3000);
+  console.log('3000 포트 시작');
+} catch (error) {
+  console.log('error')
+}
+
 module.exports = app;
