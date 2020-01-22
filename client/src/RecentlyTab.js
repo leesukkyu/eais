@@ -25,16 +25,10 @@ import moment from "moment";
 
 import TablePagination from "@material-ui/core/TablePagination";
 
+import { COLLECTION_SEARCH_URL } from "./public/CONFIG";
+
 moment.lang("ko", {
-  weekdays: [
-    "일요일",
-    "월요일",
-    "화요일",
-    "수요일",
-    "목요일",
-    "금요일",
-    "토요일"
-  ],
+  weekdays: ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"],
   weekdaysShort: ["일", "월", "화", "수", "목", "금", "토"]
 });
 
@@ -71,13 +65,9 @@ class App extends React.Component {
 
   // 검색하기 누른 경우
   onClickSearchBtn() {
-    axios
-      .get("/api/getSearch", {
-        params: {
-          searchMonday: this.state.searchMonday
-        }
-      })
-      .then(rs => {});
+    axios.get(`${COLLECTION_SEARCH_URL}/${this.state.searchMonday}`).then(rs => {
+      console.log(rs);
+    });
   }
 
   onChangeMondaySelect(e) {
@@ -107,9 +97,7 @@ class App extends React.Component {
                     {`${moment("" + item)
                       .subtract(4, "weeks")
                       .format("YYYY-MM-DD (ddd)")} 
-                      
                       / 
-                      
                       ${moment("" + item).format("YYYY-MM-DD (ddd)")}`}
                   </option>
                 );

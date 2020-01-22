@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const moment = require("moment");
 
 // 컬렉션 명을 매일 바꿔야 하기 때문에 모델 생성 함수를 export 한다
-function createItemModel() {
+function createItemModel(dateFormat) {
   var schema = new Schema(
     {
       archArea: String,
@@ -50,7 +50,7 @@ function createItemModel() {
       vlRatEstmTotArea: String
     },
     {
-      collection: moment().format("YYYYMMDD")
+      collection: dateFormat ? moment().format(dateFormat) : moment().format("YYYYMMDD")
     }
   );
   return mongoose.model("Item", schema);

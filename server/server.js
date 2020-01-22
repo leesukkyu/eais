@@ -1,18 +1,27 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const createError = require("http-errors");
 
-var indexRouter = require("./routes/index");
-var apiRouter = require("./routes/api");
+const express = require("express");
 
-var app = express();
+const path = require("path");
+
+const cookieParser = require("cookie-parser");
+
+const logger = require("morgan");
+
+const indexRouter = require("./routes/index");
+
+const apiRouter = require("./routes/api");
+
+const app = express();
+
+const database = require("./config/database");
+
+database.connect();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
-app.set('view engine', 'ejs');
-app.engine('html', require('ejs').renderFile);
+app.set("view engine", "ejs");
+app.engine("html", require("ejs").renderFile);
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -40,9 +49,9 @@ app.use(function(err, req, res, next) {
 
 try {
   app.listen(3000);
-  console.log('3000 포트 시작');
+  console.log("3000 포트 시작");
 } catch (error) {
-  console.log('error')
+  console.log("error");
 }
 
 module.exports = app;
