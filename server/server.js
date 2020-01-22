@@ -48,8 +48,8 @@ app.use(function(err, req, res, next) {
 });
 
 try {
-  app.listen(3000);
-  console.log("3000 포트 시작");
+  app.listen(5001);
+  console.log("5001 포트 시작");
 } catch (error) {
   console.log("error");
 }

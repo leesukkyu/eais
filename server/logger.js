@@ -9,7 +9,7 @@ const LOGGER = winston.createLogger({
   // 로그파일저장
   transports: [
     new winston.transports.DailyRotateFile({
-      filename: '../logs/system.log',
+      filename: './logs/system.log',
       zippedArchive: false,
       format: winston.format.printf(
         info =>

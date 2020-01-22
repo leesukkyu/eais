@@ -6,14 +6,13 @@ const parseString = require("xml2js").parseString;
 
 const database = require("./config/database");
 
-const createItemModel = require("./models/item");
+const InfoModel = require("./models/info");
 
 const LOGGER = require("./logger");
 
 const bubjungdongList1 = require("./ADDRESS_DB1");
 const bubjungdongList2 = require("./ADDRESS_DB2");
 
-let itemModel;
 let saveDataList = [];
 
 // 데이터베이스 연결.
@@ -22,8 +21,6 @@ database.connect();
 // 1. 시작.
 function init(list) {
   saveDataList = [];
-  // 새로운 모델 만들어주고.
-  itemModel = createItemModel();
   getArchInfoByList(list);
 }
 
@@ -31,7 +28,7 @@ function init(list) {
 async function getArchInfoByList(list) {
   // 조회 기간은 오늘부터 4주 전으로 한다.
   const startDate = moment()
-    .subtract(+4, "weeks")
+    .subtract(8, "weeks")
     .format("YYYYMMDD");
 
   const endDate = moment().format("YYYYMMDD");
@@ -40,7 +37,7 @@ async function getArchInfoByList(list) {
   for (var i in list) {
     count++;
     await $httpGetArchInfo(i, startDate, endDate);
-    if (count >= 50) {
+    if (count >= 10) {
       break;
     }
   }
@@ -55,7 +52,9 @@ function $httpGetArchInfo(code, startDate, endDate) {
       {
         uri: "http://apis.data.go.kr/1611000/ArchPmsService/getApBasisOulnInfo",
         qs: {
-          serviceKey: decodeURIComponent("uu2nV0CiVbjDhdcZyHf0FmfnmNdXX45Af3Ukoih3pf4i1kKriVsxdGcmWjx7DBgGRFIlVYxhOmboQu4By9X1vQ%3D%3D"),
+          serviceKey: decodeURIComponent(
+            "uu2nV0CiVbjDhdcZyHf0FmfnmNdXX45Af3Ukoih3pf4i1kKriVsxdGcmWjx7DBgGRFIlVYxhOmboQu4By9X1vQ%3D%3D"
+          ),
           sigunguCd: code.slice(0, 5),
           bjdongCd: code.slice(5, 10),
           platGbCd: "0",
@@ -73,7 +72,10 @@ function $httpGetArchInfo(code, startDate, endDate) {
           if (response.statusCode === 200) {
             let items;
             // xml 파싱 준비
-            items = body.slice(body.indexOf("<items>"), body.lastIndexOf("</items>") + 8);
+            items = body.slice(
+              body.indexOf("<items>"),
+              body.lastIndexOf("</items>") + 8
+            );
             if (items) {
               // xml 파싱
               parseString(items, (err, result) => {
@@ -102,7 +104,9 @@ function $httpGetArchInfo(code, startDate, endDate) {
             resolve();
           }
         } else {
-          LOGGER.info(`${code} 정부 RestAPI 요청 실패, 에러 : ${error.message}`);
+          LOGGER.info(
+            `${code} 정부 RestAPI 요청 실패, 에러 : ${error.message}`
+          );
           resolve();
         }
       }
@@ -112,35 +116,45 @@ function $httpGetArchInfo(code, startDate, endDate) {
 
 // 데이터베이스에 저장한다.
 function saveData(startDate, endDate) {
-  itemModel.collection.insertMany(saveDataList, function(err) {
-    if (err) {
+  InfoModel.insertMany(saveDataList, { ordered: false }, function(
+    err
+  ) {
+    if (err && err.code != 11000) {
       LOGGER.info(`${startDate} ~ ${endDate} : 데이터베이스 저장 실패`);
     } else {
-      LOGGER.info(`기간 : ${startDate} ~ ${endDate}, ${saveDataList.length}개 데이터베이스 저장 성공`);
+      LOGGER.info(
+        `기간 : ${startDate} ~ ${endDate}, ${saveDataList.length}개 데이터베이스 저장 성공`
+      );
     }
   });
 }
 
 // 월요일 아침 10시 30분 마다 수집
 function startScheduler1() {
-  var j = schedule.scheduleJob({ hour: 10, minute: 30, dayOfWeek: 1 }, function() {
-    try {
-      init(bubjungdongList1);
-    } catch (error) {
-      console.log(error);
+  var j = schedule.scheduleJob(
+    { hour: 10, minute: 30, dayOfWeek: 1 },
+    function() {
+      try {
+        init(bubjungdongList1);
+      } catch (error) {
+        console.log(error);
+      }
     }
-  });
+  );
 }
 
 // 화요일 아침 10시 30분 마다 수집
 function startScheduler2() {
-  var j = schedule.scheduleJob({ hour: 10, minute: 30, dayOfWeek: 2 }, function() {
-    try {
-      init(bubjungdongList2);
-    } catch (error) {
-      console.log(error);
+  var j = schedule.scheduleJob(
+    { hour: 10, minute: 30, dayOfWeek: 2 },
+    function() {
+      try {
+        init(bubjungdongList2);
+      } catch (error) {
+        console.log(error);
+      }
     }
-  });
+  );
 }
 
 init(bubjungdongList1);

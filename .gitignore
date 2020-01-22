@@ -104,7 +104,7 @@ dist
 .tern-port
 
 config
-
 .history
-
-config.js
+.config.js
+client/src/public/CONFIG.js
+server/public/static/*

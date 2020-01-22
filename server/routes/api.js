@@ -6,7 +6,7 @@ const request = require("request");
 
 const parseString = require("xml2js").parseString;
 
-const createItemModel = require("../models/item");
+const Info = require("../models/Info");
 
 // 프록시 역할.
 router.get("/search", function(req, res, next) {
@@ -27,16 +27,35 @@ router.get("/search", function(req, res, next) {
 });
 
 // 일자별 조회
-router.get("/collection/:dateFormat", function(req, res, next) {
-  const dateFormat = req.params.dateFormat; // 월요일마다 수집하므로 월요일 형식이 옴
-  const itemModel = createItemModel(dateFormat);
-  itemModel.find({}, function(err, docs) {
-    if (!err) {
-      res.json(docs);
-    } else {
+router.get("/collection/:page", function(req, res, next) {
+  let page, query;
+
+  query = {};
+  page = req.params.page;
+
+  const options = {
+    sort: { time: -1 },
+    limit: 10,
+    page: page ? page : 1
+  };
+
+  Info.paginate(query, options)
+    .then(function(result) {
+      res.json(result);
+    })
+    .catch(function() {
       res.status(500).send();
-    }
-  });
+    });
+  // Info.paginate({});
+  // Info.find({})
+  //   .sort({ time: "desc" })
+  //   .exec(function(err, docs) {
+  //     if (!err) {
+  //       res.json(docs);
+  //     } else {
+  //       res.status(500).send();
+  //     }
+  //   });
 });
 
 function requestData() {
