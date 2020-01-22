@@ -37,9 +37,9 @@ async function getArchInfoByList(list) {
   for (var i in list) {
     count++;
     await $httpGetArchInfo(i, startDate, endDate);
-    if (count >= 10) {
-      break;
-    }
+    // if (count >= 10) {
+    //   break;
+    // }
   }
   //다 돌면 디비에 저장하기
   saveData(startDate, endDate);
