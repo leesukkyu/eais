@@ -20,6 +20,23 @@ router.get("/getList", function(req, res, next) {
   );
 });
 
+router.get("/getCollection", function(req, res, next) {
+  request.get(
+    {
+      uri: "http://apis.data.go.kr/1611000/ArchPmsService/getApHsTpInfo",
+      qs: req.query
+    },
+    function(error, response, body) {
+      console.log(error, response, body);
+      console.log(parseString);
+      parseString(body, (err, result) => {
+        console.log(result.response.body[0]);
+        res.send(result.response.body[0]);
+      });
+    }
+  );
+});
+
 function requestData() {
   // serviceKey: decodeURIComponent(ARCH_KEY),
   //         sigunguCd: searchCode.slice(0, 5),
