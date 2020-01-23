@@ -34,7 +34,7 @@ router.get("/collection/:page", function(req, res, next) {
   page = req.params.page;
 
   const options = {
-    sort: { time: -1 },
+    sort: { crtnDay: -1 },
     limit: 10,
     page: page ? page : 1
   };

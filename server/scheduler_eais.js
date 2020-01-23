@@ -6,7 +6,7 @@ const parseString = require("xml2js").parseString;
 
 const database = require("./config/database");
 
-const InfoModel = require("./models/info");
+const InfoModel = require("./models/Info");
 
 const LOGGER = require("./logger");
 
@@ -28,9 +28,9 @@ function init(list) {
 
 // 2. 리스트를 돌면서 하나씩 통신해서 데이터를 가져온다. 이때 요청은 동기로 진행된다.
 async function getArchInfoByList(list) {
-  // 조회 기간은 오늘부터 4주 전으로 한다.
+  // 조회 기간은 오늘부터 1주 전으로 한다.
   const startDate = moment()
-    .subtract(4, "weeks")
+    .subtract(1, "weeks")
     .format("YYYYMMDD");
 
   const endDate = moment().format("YYYYMMDD");
@@ -123,9 +123,9 @@ function saveData(startDate, endDate) {
   });
 }
 
-// 목요일 아침 11시 30분 마다 수집
+// 목요일 13시 30분 마다 수집
 function startScheduler1() {
-  var j = schedule.scheduleJob({ hour: 11, minute: 30, dayOfWeek: 4 }, function() {
+  var j = schedule.scheduleJob({ hour: 13, minute: 30, dayOfWeek: 4 }, function() {
     try {
       init(bubjungdongList1);
     } catch (error) {
@@ -134,9 +134,9 @@ function startScheduler1() {
   });
 }
 
-// 금요일 아침 11시 30분 마다 수집
+// 금요일 13시 30분 마다 수집
 function startScheduler2() {
-  var j = schedule.scheduleJob({ hour: 11, minute: 30, dayOfWeek: 5 }, function() {
+  var j = schedule.scheduleJob({ hour: 13, minute: 30, dayOfWeek: 5 }, function() {
     try {
       init(bubjungdongList2);
     } catch (error) {
