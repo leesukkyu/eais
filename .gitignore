@@ -103,8 +103,9 @@ dist
 # TernJS port file
 .tern-port
 
+# Local files
 config
 .history
-.config.js
-client/src/public/CONFIG.js
+.vscode
 server/public/static/*
+# CONFIG.js

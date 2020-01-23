@@ -25,16 +25,7 @@ import moment from "moment";
 
 import TablePagination from "@material-ui/core/TablePagination";
 
-import {
-  SIDO_CODE_URL,
-  SIDO_CODE_KEY,
-  SIGOON_CODE_URL,
-  SIGOON_CODE_KEY,
-  DONG_CODE_URL,
-  DONG_CODE_KEY,
-  SEARCH_URL,
-  SEARCH_KEY
-} from "./public/CONFIG";
+import { SIDO_CODE_URL, SIDO_CODE_KEY, SIGOON_CODE_URL, SIGOON_CODE_KEY, DONG_CODE_URL, DONG_CODE_KEY, SEARCH_URL, SEARCH_KEY } from "./public/CONFIG";
 
 class App extends React.Component {
   constructor(props) {
@@ -60,9 +51,7 @@ class App extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.$httpLoadArchInfo = this.$httpLoadArchInfo.bind(this);
-    this.onClickBubjungdongSearchBtn = this.onClickBubjungdongSearchBtn.bind(
-      this
-    );
+    this.onClickBubjungdongSearchBtn = this.onClickBubjungdongSearchBtn.bind(this);
     this.onClickChips = this.onClickChips.bind(this);
     this.onClickSelectSearchBtn = this.onClickSelectSearchBtn.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
@@ -265,27 +254,14 @@ class App extends React.Component {
 
   render() {
     const { state } = this;
-    const {
-      sidoList,
-      sigoonList,
-      dongList,
-      searchStr,
-      searchResultList,
-      searchCode,
-      tableList,
-      tablePage,
-      tableTotalCount
-    } = state;
+    const { sidoList, sigoonList, dongList, searchStr, searchResultList, searchCode, tableList, tablePage, tableTotalCount } = state;
 
     return (
       <div>
         <div style={{ padding: "25px" }}>
           <div style={{ margin: "10px" }}>
             최근
-            <NativeSelect
-              value={state.searchMonth}
-              onChange={this.onChangeSearchMonth}
-            >
+            <NativeSelect value={state.searchMonth} onChange={this.onChangeSearchMonth}>
               <option value="1">1개월</option>
               <option value="2">2개월</option>
               <option value="3">3개월</option>
@@ -379,10 +355,7 @@ class App extends React.Component {
                 }
               }}
             />
-            <Button
-              color="secondary"
-              onClick={this.onClickBubjungdongSearchBtn}
-            >
+            <Button color="secondary" onClick={this.onClickBubjungdongSearchBtn}>
               법정동 검색하기<Icon>search</Icon>
             </Button>
           </div>
@@ -479,7 +452,7 @@ class App extends React.Component {
                   <TableRow>
                     <TablePagination
                       colSpan={21}
-                      count={tableTotalCount}
+                      count={+tableTotalCount}
                       rowsPerPage={10}
                       page={tablePage}
                       SelectProps={{
