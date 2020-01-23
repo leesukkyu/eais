@@ -1,52 +1,65 @@
-import React from "react";
-import "./public/App.css";
+import React from 'react';
+import './public/App.css';
 
-import axios from "axios";
+import axios from 'axios';
 
-import Chip from "@material-ui/core/Chip";
-import Icon from "@material-ui/core/Icon";
-import Input from "@material-ui/core/Input";
-import NativeSelect from "@material-ui/core/NativeSelect";
-import Button from "@material-ui/core/Button";
+import Chip from '@material-ui/core/Chip';
+import Icon from '@material-ui/core/Icon';
+import Input from '@material-ui/core/Input';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import Button from '@material-ui/core/Button';
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableFooter from "@material-ui/core/TableFooter";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableFooter from '@material-ui/core/TableFooter';
 
-import Paper from "@material-ui/core/Paper";
+import LinearProgress from '@material-ui/core/LinearProgress';
 
-import bubjungdongList from "./public/ADDRESS_DB.json";
+import Paper from '@material-ui/core/Paper';
 
-import moment from "moment";
+import bubjungdongList from './public/ADDRESS_DB.json';
 
-import TablePagination from "@material-ui/core/TablePagination";
+import moment from 'moment';
 
-import { SIDO_CODE_URL, SIDO_CODE_KEY, SIGOON_CODE_URL, SIGOON_CODE_KEY, DONG_CODE_URL, DONG_CODE_KEY, SEARCH_URL, SEARCH_KEY } from "./public/CONFIG";
+import TablePagination from '@material-ui/core/TablePagination';
+
+import {
+  SIDO_CODE_URL,
+  SIDO_CODE_KEY,
+  SIGOON_CODE_URL,
+  SIGOON_CODE_KEY,
+  DONG_CODE_URL,
+  DONG_CODE_KEY,
+  SEARCH_URL,
+  SEARCH_KEY,
+} from './public/CONFIG';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: false,
+
       searchMonth: 6,
 
-      sidoCode: "",
+      sidoCode: '',
       sidoList: [],
-      sigoonCode: "",
+      sigoonCode: '',
       sigoonList: [],
-      dongCode: "",
+      dongCode: '',
       dongList: [],
 
-      searchStr: "",
-      searchCode: "",
+      searchStr: '',
+      searchCode: '',
       searchResultList: [],
 
       tableList: [],
       tablePage: 0,
-      tableTotalCount: 0
+      tableTotalCount: 0,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -68,11 +81,11 @@ class App extends React.Component {
         ...this.state,
         tableList: [],
         tablePage: 0,
-        searchCode: item.code
+        searchCode: item.code,
       },
       () => {
         this.$httpLoadArchInfo();
-      }
+      },
     );
   }
 
@@ -85,13 +98,13 @@ class App extends React.Component {
         // 현재는 동까지 정보가 입력되어야만 검색 가능
         searchResultList.push({
           code: i,
-          name: bubjungdongList[i]
+          name: bubjungdongList[i],
         });
       }
     }
     this.setState({
       ...this.state,
-      searchResultList
+      searchResultList,
     });
   }
 
@@ -99,13 +112,15 @@ class App extends React.Component {
     this.setState(
       {
         ...this.state,
+        searchStr: '',
+        searchResultList: [],
         tableList: [],
         tablePage: 0,
-        searchCode: this.state.dongCode + "00"
+        searchCode: this.state.dongCode + '00',
       },
       () => {
         this.$httpLoadArchInfo();
-      }
+      },
     );
   }
 
@@ -113,11 +128,11 @@ class App extends React.Component {
     this.setState(
       {
         tableList: [],
-        tablePage: page
+        tablePage: page,
       },
       () => {
         this.$httpLoadArchInfo();
-      }
+      },
     );
   }
 
@@ -129,107 +144,128 @@ class App extends React.Component {
           ...this.state,
           searchMonth: e.target.value,
           tableList: [],
-          tablePage: 0
+          tablePage: 0,
         },
         () => {
           this.$httpLoadArchInfo();
-        }
+        },
       );
     } else {
       this.setState({
         ...this.state,
-        searchMonth: e.target.value
+        searchMonth: e.target.value,
       });
     }
   }
 
   $httpLoadSidoCodeList() {
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    });
     axios
       .get(SIDO_CODE_URL, {
-        params: { authkey: SIDO_CODE_KEY }
+        params: { authkey: SIDO_CODE_KEY },
       })
       .then(({ data }) => {
         this.setState({
           ...this.state,
+          isLoading: false,
           sidoList: data.admVOList.admVOList,
-          sidoCode: "",
-          sigoonCode: "",
+          sidoCode: '',
+          sigoonCode: '',
           sigoonList: [],
-          dongCode: "",
-          dongList: []
+          dongCode: '',
+          dongList: [],
         });
       });
   }
 
   $httpLoadSigoonCodeList() {
     const { sidoCode } = this.state;
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    });
     axios
       .get(SIGOON_CODE_URL, {
         params: {
           admCode: sidoCode,
-          authkey: SIGOON_CODE_KEY
-        }
+          authkey: SIGOON_CODE_KEY,
+        },
       })
       .then(({ data }) => {
         this.setState({
           ...this.state,
-          sigoonCode: "",
+          isLoading: false,
+          sigoonCode: '',
           sigoonList: data.admVOList.admVOList,
-          dongCode: "",
-          dongList: []
+          dongCode: '',
+          dongList: [],
         });
       });
   }
 
   $httpLoadDongCodeList() {
     const { sigoonCode } = this.state;
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    });
     axios
       .get(DONG_CODE_URL, {
         params: {
           admCode: sigoonCode,
-          authkey: DONG_CODE_KEY
-        }
+          authkey: DONG_CODE_KEY,
+        },
       })
       .then(({ data }) => {
         this.setState({
           ...this.state,
-          dongCode: "",
-          dongList: data.admVOList.admVOList
+          isLoading: false,
+          dongCode: '',
+          dongList: data.admVOList.admVOList,
         });
       });
   }
 
   $httpLoadArchInfo() {
     const { searchCode, tablePage, searchMonth } = this.state;
+    this.setState({
+      ...this.state,
+      isLoading: true,
+    });
     axios
       .get(SEARCH_URL, {
         params: {
           serviceKey: decodeURIComponent(SEARCH_KEY),
           sigunguCd: searchCode.slice(0, 5),
           bjdongCd: searchCode.slice(5, 10),
-          platGbCd: "0",
-          bun: "",
-          ji: "",
+          platGbCd: '0',
+          bun: '',
+          ji: '',
           startDate: moment()
-            .subtract(+searchMonth, "months")
-            .format("YYYYMMDD"),
-          endDate: moment().format("YYYYMMDD"),
-          numOfRows: "10",
-          pageNo: tablePage === 0 ? 1 : tablePage
-        }
+            .subtract(+searchMonth, 'months')
+            .format('YYYYMMDD'),
+          endDate: moment().format('YYYYMMDD'),
+          numOfRows: '10',
+          pageNo: tablePage === 0 ? 1 : tablePage,
+        },
       })
       .then(rs => {
         if (rs.data.items[0]) {
           this.setState({
             ...this.state,
+            isLoading: false,
             tableList: rs.data.items[0].item,
-            tableTotalCount: rs.data.totalCount[0]
+            tableTotalCount: rs.data.totalCount[0],
           });
         } else {
           this.setState({
             ...this.state,
+            isLoading: false,
             tableList: [],
-            tableTotalCount: 0
+            tableTotalCount: 0,
           });
         }
       });
@@ -239,27 +275,41 @@ class App extends React.Component {
     this.setState(
       {
         ...this.state,
-        [name]: event.target.value
+        [name]: event.target.value,
       },
       () => {
         const { searchCode } = this.state;
-        if (name === "sidoCode") {
+        if (name === 'sidoCode') {
           this.$httpLoadSigoonCodeList();
-        } else if (name === "sigoonCode") {
+        } else if (name === 'sigoonCode') {
           this.$httpLoadDongCodeList();
         }
-      }
+      },
     );
   }
 
   render() {
     const { state } = this;
-    const { sidoList, sigoonList, dongList, searchStr, searchResultList, searchCode, tableList, tablePage, tableTotalCount } = state;
+    const {
+      isLoading,
+      sidoList,
+      sigoonList,
+      dongList,
+      searchStr,
+      searchResultList,
+      searchCode,
+      tableList,
+      tablePage,
+      tableTotalCount,
+    } = state;
 
     return (
       <div>
-        <div style={{ padding: "25px" }}>
-          <div style={{ margin: "10px" }}>
+        <div style={{ position: 'fixed', width: '100%', top: '60px', zIndex: 1 }}>
+          {isLoading ? <LinearProgress variant="query" /> : null}
+        </div>
+        <div style={{ padding: '25px' }}>
+          <div style={{ margin: '10px' }}>
             최근
             <NativeSelect value={state.searchMonth} onChange={this.onChangeSearchMonth}>
               <option value="1">1개월</option>
@@ -280,12 +330,12 @@ class App extends React.Component {
           <div>
             <NativeSelect
               style={{
-                marginRight: "10px"
+                marginRight: '10px',
               }}
               className="mr-2"
               value={state.sidoCode}
               onChange={e => {
-                this.handleChange("sidoCode", e);
+                this.handleChange('sidoCode', e);
               }}
             >
               <option>시/도 선택</option>
@@ -300,11 +350,11 @@ class App extends React.Component {
 
             <NativeSelect
               style={{
-                marginRight: "10px"
+                marginRight: '10px',
               }}
               value={state.sigoonCode}
               onChange={e => {
-                this.handleChange("sigoonCode", e);
+                this.handleChange('sigoonCode', e);
               }}
             >
               <option>시/군 선택</option>
@@ -319,11 +369,11 @@ class App extends React.Component {
 
             <NativeSelect
               style={{
-                marginRight: "20px"
+                marginRight: '20px',
               }}
               value={state.dongCode}
               onChange={e => {
-                this.handleChange("dongCode", e);
+                this.handleChange('dongCode', e);
               }}
             >
               <option>동 선택</option>
@@ -346,7 +396,7 @@ class App extends React.Component {
               onChange={e => {
                 this.setState({
                   ...this.state,
-                  searchStr: e.target.value
+                  searchStr: e.target.value,
                 });
               }}
               onKeyUp={e => {
@@ -370,15 +420,15 @@ class App extends React.Component {
                     this.onClickChips(item);
                   }}
                   deleteIcon={<Icon>search</Icon>}
-                  color={searchCode === item.code ? "primary" : "default"}
-                  style={{ margin: "5px 5px" }}
+                  color={searchCode === item.code ? 'primary' : 'default'}
+                  style={{ margin: '5px 5px' }}
                 />
               );
             })}
           </div>
           <div
             style={{
-              marginTop: "10px"
+              marginTop: '10px',
             }}
           >
             <TableContainer component={Paper}>
@@ -457,8 +507,8 @@ class App extends React.Component {
                       page={tablePage}
                       SelectProps={{
                         style: {
-                          display: "none"
-                        }
+                          display: 'none',
+                        },
                       }}
                       onChangePage={this.onChangePage}
                     />

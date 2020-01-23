@@ -1,19 +1,19 @@
 // TODO : 예외 처리 sms 보내기 - 네이버 sens에 추가로 이용
-const schedule = require("node-schedule");
-const request = require("request");
-const moment = require("moment");
-const parseString = require("xml2js").parseString;
+const schedule = require('node-schedule');
+const request = require('request');
+const moment = require('moment');
+const parseString = require('xml2js').parseString;
 
-const database = require("./config/database");
+const database = require('./config/database');
 
-const InfoModel = require("./models/Info");
+const InfoModel = require('./models/Info');
 
-const LOGGER = require("./logger");
+const LOGGER = require('./logger');
 
-const bubjungdongList1 = require("./ADDRESS_DB1");
-const bubjungdongList2 = require("./ADDRESS_DB2");
+const bubjungdongList1 = require('./ADDRESS_DB1');
+const bubjungdongList2 = require('./ADDRESS_DB2');
 
-const EAIS_KEY = require("./config/key").EAIS_KEY;
+const EAIS_KEY = require('./config/key').EAIS_KEY;
 
 let saveDataList = [];
 
@@ -30,10 +30,10 @@ function init(list) {
 async function getArchInfoByList(list) {
   // 조회 기간은 오늘부터 1주 전으로 한다.
   const startDate = moment()
-    .subtract(1, "weeks")
-    .format("YYYYMMDD");
+    .subtract(1, 'weeks')
+    .format('YYYYMMDD');
 
-  const endDate = moment().format("YYYYMMDD");
+  const endDate = moment().format('YYYYMMDD');
 
   let count = 0;
   for (var i in list) {
@@ -52,19 +52,19 @@ function $httpGetArchInfo(code, startDate, endDate) {
   return new Promise(function(resolve, reject) {
     request.get(
       {
-        uri: "http://apis.data.go.kr/1611000/ArchPmsService/getApBasisOulnInfo",
+        uri: 'http://apis.data.go.kr/1611000/ArchPmsService/getApBasisOulnInfo',
         qs: {
           serviceKey: decodeURIComponent(EAIS_KEY),
           sigunguCd: code.slice(0, 5),
           bjdongCd: code.slice(5, 10),
-          platGbCd: "0",
-          bun: "",
-          ji: "",
+          platGbCd: '0',
+          bun: '',
+          ji: '',
           startDate,
           endDate,
-          numOfRows: "100",
-          pageNo: 1
-        }
+          numOfRows: '100',
+          pageNo: 1,
+        },
       },
       // 실패 하더라도 일단 무조건 넘어가야 함.
       function(error, response, body) {
@@ -72,7 +72,7 @@ function $httpGetArchInfo(code, startDate, endDate) {
           if (response.statusCode === 200) {
             let items;
             // xml 파싱 준비
-            items = body.slice(body.indexOf("<items>"), body.lastIndexOf("</items>") + 8);
+            items = body.slice(body.indexOf('<items>'), body.lastIndexOf('</items>') + 8);
             if (items) {
               // xml 파싱
               parseString(items, (err, result) => {
@@ -107,7 +107,7 @@ function $httpGetArchInfo(code, startDate, endDate) {
           LOGGER.info(`${code} 정부 RestAPI 요청 실패, 에러 : ${error.message}`);
           resolve();
         }
-      }
+      },
     );
   });
 }

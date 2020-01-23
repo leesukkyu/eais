@@ -15,9 +15,7 @@ const LOGGER = winston.createLogger({
         info =>
           `${moment(new Date())
             .tz('Asia/Seoul')
-            .format('YYYY-MM-DD HH:mm:ss')} [${info.level.toUpperCase()}] - ${
-            info.message
-          }`,
+            .format('YYYY-MM-DD HH:mm:ss')} [${info.level.toUpperCase()}] - ${info.message}`,
       ),
     }),
     new winston.transports.Console({
@@ -25,9 +23,7 @@ const LOGGER = winston.createLogger({
         info =>
           `${moment(new Date())
             .tz('Asia/Seoul')
-            .format('YYYY-MM-DD HH:mm:ss')} [${info.level.toUpperCase()}] - ${
-            info.message
-          }`,
+            .format('YYYY-MM-DD HH:mm:ss')} [${info.level.toUpperCase()}] - ${info.message}`,
       ),
     }),
   ],

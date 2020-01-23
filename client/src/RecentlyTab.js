@@ -1,31 +1,31 @@
-import React from "react";
+import React from 'react';
 
-import axios from "axios";
+import axios from 'axios';
 
-import Modal from "@material-ui/core/Modal";
-import Icon from "@material-ui/core/Icon";
-import Button from "@material-ui/core/Button";
+import Modal from '@material-ui/core/Modal';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableFooter from "@material-ui/core/TableFooter";
-import Grid from "@material-ui/core/Grid";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableFooter from '@material-ui/core/TableFooter';
+import Grid from '@material-ui/core/Grid';
 
-import LinearProgress from "@material-ui/core/LinearProgress";
+import LinearProgress from '@material-ui/core/LinearProgress';
 
-import Paper from "@material-ui/core/Paper";
+import Paper from '@material-ui/core/Paper';
 
-import moment from "moment";
+import moment from 'moment';
 
-import { COLLECTION_SEARCH_URL } from "./public/CONFIG";
+import { COLLECTION_SEARCH_URL } from './public/CONFIG';
 
-moment.locale("ko", {
-  weekdays: ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"],
-  weekdaysShort: ["일", "월", "화", "수", "목", "금", "토"]
+moment.locale('ko', {
+  weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+  weekdaysShort: ['일', '월', '화', '수', '목', '금', '토'],
 });
 
 class RecentlyTab extends React.Component {
@@ -45,8 +45,8 @@ class RecentlyTab extends React.Component {
         hasPrevPage: null,
         hasNextPage: null,
         prevPage: null,
-        nextPage: 1
-      }
+        nextPage: 1,
+      },
     };
 
     this.onClickLoadBtn = this.onClickLoadBtn.bind(this);
@@ -63,14 +63,14 @@ class RecentlyTab extends React.Component {
     if (page) {
       this.setState({
         ...this.state,
-        isLoading: true
+        isLoading: true,
       });
       axios.get(`${COLLECTION_SEARCH_URL}/${page}`).then(rs => {
         this.state.tableList = this.state.tableList.concat(rs.data.docs);
         this.setState({
           ...this.state,
           isLoading: false,
-          rs: rs.data
+          rs: rs.data,
         });
       });
     }
@@ -81,7 +81,7 @@ class RecentlyTab extends React.Component {
     console.log(item);
     this.setState({
       ...this.state,
-      isModalOpen: true
+      isModalOpen: true,
     });
   }
 
@@ -90,14 +90,16 @@ class RecentlyTab extends React.Component {
     const { hasNextPage } = this.state.rs;
     return (
       <React.Fragment>
-        <div style={{ position: "fixed", width: "100%", top: "44px", zIndex: 1 }}>{isLoading ? <LinearProgress variant="query" /> : null}</div>
+        <div style={{ position: 'fixed', width: '100%', top: '60px', zIndex: 1 }}>
+          {isLoading ? <LinearProgress variant="query" /> : null}
+        </div>
         <TableContainer
           component={Paper}
           style={{
-            maxHeight: "100%",
-            width: "100%",
-            boxSizing: "border-box",
-            padding: "0"
+            maxHeight: '100%',
+            width: '100%',
+            boxSizing: 'border-box',
+            padding: '0',
           }}
         >
           <Table>
@@ -150,7 +152,7 @@ class RecentlyTab extends React.Component {
                   <TableCell>{item.useAprDay}</TableCell>
                   <TableCell>{item.crtnDay}</TableCell>
 
-                  <TableCell>{moment(item.time).format("YYYYMMDD")}</TableCell>
+                  <TableCell>{moment(item.time).format('YYYYMMDD')}</TableCell>
                   <TableCell>
                     <Button color="secondary" onClick={this.onClickModalOpenBtn.bind(this, item)}>
                       <Icon>zoom_in</Icon>
@@ -176,7 +178,13 @@ class RecentlyTab extends React.Component {
         </TableContainer>
 
         <Modal open={isModalOpen} onClose={this.onClickModalCloseBtn}>
-          <Grid container direction="row" justify="center" alignItems="center" style={{ height: "100%", overflow: "auto", padding: "20px 0" }}>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            style={{ height: '100%', overflow: 'auto', padding: '20px 0' }}
+          >
             <Grid item xs={12} sm={6}>
               <Paper>상세보기 기능 준비</Paper>
             </Grid>
