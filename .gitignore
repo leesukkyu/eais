@@ -105,6 +105,7 @@ dist
 
 # Local files
 config
+key
 .history
 .vscode
 server/public/static/*

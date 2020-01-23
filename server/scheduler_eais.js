@@ -13,6 +13,8 @@ const LOGGER = require("./logger");
 const bubjungdongList1 = require("./ADDRESS_DB1");
 const bubjungdongList2 = require("./ADDRESS_DB2");
 
+const EAIS_KEY = require("./config/key").EAIS_KEY;
+
 let saveDataList = [];
 
 // 데이터베이스 연결.
@@ -52,7 +54,7 @@ function $httpGetArchInfo(code, startDate, endDate) {
       {
         uri: "http://apis.data.go.kr/1611000/ArchPmsService/getApBasisOulnInfo",
         qs: {
-          serviceKey: decodeURIComponent("uu2nV0CiVbjDhdcZyHf0FmfnmNdXX45Af3Ukoih3pf4i1kKriVsxdGcmWjx7DBgGRFIlVYxhOmboQu4By9X1vQ%3D%3D"),
+          serviceKey: decodeURIComponent(EAIS_KEY),
           sigunguCd: code.slice(0, 5),
           bjdongCd: code.slice(5, 10),
           platGbCd: "0",
