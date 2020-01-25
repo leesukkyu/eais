@@ -123,22 +123,16 @@ function saveData(startDate, endDate) {
   });
 }
 
-// 목요일 13시 30분 마다 수집
+// (timezone +9)
+// 매일 오전 10시 30분 마다 수집
 function startScheduler1() {
-  var j = schedule.scheduleJob({ hour: 13, minute: 30, dayOfWeek: 4 }, function() {
+  var j = schedule.scheduleJob({ hour: 1, minute: 30 }, function() {
     try {
-      init(bubjungdongList1);
-    } catch (error) {
-      LOGGER.info(`${startDate} ~ ${endDate} : 수집 실패`);
-    }
-  });
-}
-
-// 금요일 13시 30분 마다 수집
-function startScheduler2() {
-  var j = schedule.scheduleJob({ hour: 13, minute: 30, dayOfWeek: 5 }, function() {
-    try {
-      init(bubjungdongList2);
+      if (new Date().getDay() % 2 == 0) {
+        init(bubjungdongList1);
+      } else {
+        init(bubjungdongList2);
+      }
     } catch (error) {
       LOGGER.info(`${startDate} ~ ${endDate} : 수집 실패`);
     }
@@ -147,4 +141,3 @@ function startScheduler2() {
 
 //init(bubjungdongList1);
 startScheduler1();
-startScheduler2();
