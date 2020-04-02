@@ -38,7 +38,7 @@ async function getArchInfoByList(list) {
 
   const endDate = moment().format('YYYYMMDD');
   var i = CURRENT_INDEX;
-  for (i; i < 5; i++) {
+  for (i; i < list.length; i++) {
     if (httpCount > 9000) {
       break;
     }
