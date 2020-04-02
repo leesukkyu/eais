@@ -2,6 +2,7 @@
 const schedule = require('node-schedule');
 const request = require('request');
 const moment = require('moment');
+
 const parseString = require('xml2js').parseString;
 
 const database = require('./config/database');
@@ -10,46 +11,55 @@ const InfoModel = require('./models/Info');
 
 const LOGGER = require('./logger');
 
-const bubjungdongList1 = require('./ADDRESS_DB1');
-const bubjungdongList2 = require('./ADDRESS_DB2');
+const bubjungdongList = require('./ADDREDD_DB_LIST');
 
 const EAIS_KEY = require('./config/key').EAIS_KEY;
 
-let saveDataList = [];
+let CURRENT_INDEX = 0;
+
+let httpCount = 0; // 요청수
+
+let saveDataList = []; // 저장할 데이터
 
 // 데이터베이스 연결.
 database.connect();
 
 // 1. 시작.
 function init(list) {
-  saveDataList = [];
+  httpCount = 0; //  요청수 초기화
+  saveDataList = []; // 저장할 데이터 초기화
   getArchInfoByList(list);
 }
 
 // 2. 리스트를 돌면서 하나씩 통신해서 데이터를 가져온다. 이때 요청은 동기로 진행된다.
 async function getArchInfoByList(list) {
-  // 조회 기간은 오늘부터 1주 전으로 한다.
+  // 조회 기간은 오늘부터 3개월 전으로 한다.
   const startDate = moment()
-    .subtract(1, 'weeks')
+    .subtract(3, 'months')
     .format('YYYYMMDD');
 
   const endDate = moment().format('YYYYMMDD');
-
-  let count = 0;
-  for (var i in list) {
-    count++;
-    await $httpGetArchInfo(i, startDate, endDate);
-    // if (count >= 10) {
-    //   break;
-    // }
+  var i = CURRENT_INDEX;
+  for (i; i < list.length; i++) {
+    if (httpCount > 9000) {
+      break;
+    }
+    //await $httpGetArchInfo(list[i].code, startDate, endDate, 1);
+    await $httpGetArchInfo('1168010300', startDate, endDate, 1);
   }
-  //다 돌면 디비에 저장하기
+  if (i >= list.length) {
+    CURRENT_INDEX = 0;
+  } else {
+    CURRENT_INDEX = i;
+  }
+  //9000번을 요청했거나, 리스트를 다 돌은 경우에는 디비에 저장하기
   saveData(startDate, endDate);
 }
 
 // 3. 서버와 통신해서 데이터를 가져온다.
-function $httpGetArchInfo(code, startDate, endDate) {
-  return new Promise(function(resolve, reject) {
+function $httpGetArchInfo(code, startDate, endDate, pageNo) {
+  return new Promise((resolve, reject) => {
+    httpCount++;
     request.get(
       {
         uri: 'http://apis.data.go.kr/1611000/ArchPmsService/getApBasisOulnInfo',
@@ -57,13 +67,13 @@ function $httpGetArchInfo(code, startDate, endDate) {
           serviceKey: decodeURIComponent(EAIS_KEY),
           sigunguCd: code.slice(0, 5),
           bjdongCd: code.slice(5, 10),
-          platGbCd: '0',
+          platGbCd: '',
           bun: '',
           ji: '',
           startDate,
           endDate,
           numOfRows: '100',
-          pageNo: 1,
+          pageNo: pageNo,
         },
       },
       // 실패 하더라도 일단 무조건 넘어가야 함.
@@ -75,7 +85,7 @@ function $httpGetArchInfo(code, startDate, endDate) {
             items = body.slice(body.indexOf('<items>'), body.lastIndexOf('</items>') + 8);
             if (items) {
               // xml 파싱
-              parseString(items, (err, result) => {
+              parseString(items, async function(err, result) {
                 if (!err) {
                   result.items.item.forEach((elem, index) => {
                     const data = elem;
@@ -88,6 +98,7 @@ function $httpGetArchInfo(code, startDate, endDate) {
                   // 제대로 파싱까지 성공
                   if (result.items.item.length >= 100) {
                     LOGGER.info(`${startDate} ~ ${endDate} : 조회 결과 100개가 넘는 법정동이 있음. 누락 데이터 발생`);
+                    await $httpGetArchInfo(code, startDate, endDate, pageNo + 1);
                   }
                   resolve();
                 } else {
@@ -126,18 +137,12 @@ function saveData(startDate, endDate) {
 // (timezone +9)
 // 매일 오전 10시 30분 마다 수집
 function startScheduler1() {
-  var j = schedule.scheduleJob({ hour: 1, minute: 30 }, function() {
-    try {
-      if (new Date().getDay() % 2 == 0) {
-        init(bubjungdongList1);
-      } else {
-        init(bubjungdongList2);
-      }
-    } catch (error) {
-      LOGGER.info(`${startDate} ~ ${endDate} : 수집 실패`);
-    }
-  });
+  var j = schedule.scheduleJob({ hour: 1, minute: 30 }, start);
 }
 
-//init(bubjungdongList1);
-startScheduler1();
+function start() {
+  init(bubjungdongList);
+}
+
+start();
+//startScheduler1();
