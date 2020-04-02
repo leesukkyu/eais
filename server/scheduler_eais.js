@@ -2,6 +2,7 @@
 const schedule = require('node-schedule');
 const request = require('request');
 const moment = require('moment');
+const fs = require('fs');
 
 const parseString = require('xml2js').parseString;
 
@@ -21,9 +22,6 @@ let httpCount = 0; // 요청수
 
 let saveDataList = []; // 저장할 데이터
 
-// 데이터베이스 연결.
-database.connect();
-
 // 1. 시작.
 function init(list) {
   httpCount = 0; //  요청수 초기화
@@ -40,12 +38,12 @@ async function getArchInfoByList(list) {
 
   const endDate = moment().format('YYYYMMDD');
   var i = CURRENT_INDEX;
-  for (i; i < list.length; i++) {
+  for (i; i < 5; i++) {
     if (httpCount > 9000) {
       break;
     }
-    //await $httpGetArchInfo(list[i].code, startDate, endDate, 1);
-    await $httpGetArchInfo('1168010300', startDate, endDate, 1);
+    await $httpGetArchInfo(list[i].code, startDate, endDate, 1);
+    //await $httpGetArchInfo('1168010300', startDate, endDate, 1);
   }
   if (i >= list.length) {
     CURRENT_INDEX = 0;
@@ -125,6 +123,7 @@ function $httpGetArchInfo(code, startDate, endDate, pageNo) {
 
 // 데이터베이스에 저장한다.
 function saveData(startDate, endDate) {
+  fs.writeFileSync('./CURRENT_INDEX.json', JSON.stringify(CURRENT_INDEX));
   InfoModel.insertMany(saveDataList, { ordered: false }, function(err) {
     if (err && err.code != 11000) {
       LOGGER.info(`${startDate} ~ ${endDate} : 데이터베이스 저장 실패`);
@@ -144,5 +143,7 @@ function start() {
   init(bubjungdongList);
 }
 
-start();
-//startScheduler1();
+database.connect().then(() => {
+  //start();
+  startScheduler1();
+});
