@@ -108,5 +108,4 @@ config
 key
 .history
 .vscode
-server/public/static/*
 # CONFIG.js
