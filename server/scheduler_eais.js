@@ -53,6 +53,7 @@ async function getArchInfoByList(list) {
   } else {
     CURRENT_INDEX = i;
   }
+  LOGGER.info(`한 사이클 완료`);
 }
 
 // 3. 서버와 통신해서 데이터를 가져온다.
@@ -96,7 +97,7 @@ function $httpGetArchInfo(code, startDate, endDate, pageNo) {
                   });
                   // 제대로 파싱까지 성공
                   if (result.items.item.length >= 100) {
-                    LOGGER.info(`${startDate} ~ ${endDate} : 조회 결과 100개가 넘는 법정동이 있음. 누락 데이터 발생`);
+                    LOGGER.info(`${startDate} ~ ${endDate} : 조회 결과 100개가 넘는 법정동이 있음.`);
                     await $httpGetArchInfo(code, startDate, endDate, pageNo + 1);
                   }
                   resolve();
@@ -127,7 +128,9 @@ function saveData(startDate, endDate, saveDataList) {
   fs.writeFileSync('./CURRENT_INDEX.json', JSON.stringify(CURRENT_INDEX));
   InfoModel.insertMany(saveDataList, { ordered: false }, function(err) {
     if (err && err.code != 11000) {
-      LOGGER.info(`${startDate} ~ ${endDate} : 데이터베이스 저장 실패`);
+      LOGGER.info(`${startDate} ~ ${endDate} : 데이터베이스 저장 실패1`);
+    } else if (err) {
+      LOGGER.info(`${startDate} ~ ${endDate} : 데이터베이스 저장 실패2`);
     } else {
       LOGGER.info(`기간 : ${startDate} ~ ${endDate}, ${saveDataList.length}개 데이터베이스 저장 성공`);
     }
@@ -135,9 +138,9 @@ function saveData(startDate, endDate, saveDataList) {
 }
 
 // (timezone +9)
-// 매일 오후 7시 15분 마다 수집
-function startScheduler1() {
-  var j = schedule.scheduleJob({ hour: 20, minute: 3 }, start);
+// 매일 오전 10시 30분 마다 수집
+function startScheduler() {
+  var j = schedule.scheduleJob({ hour: 1, minute: 30 }, start);
 }
 
 function start() {
@@ -145,12 +148,11 @@ function start() {
     LOGGER.info(`시작`);
     init(bubjungdongList);
   } catch (error) {
-    LOGGER.info(`에러 ------- ${error}`);
+    LOGGER.error(`에러 ------- ${error}`);
   }
 }
 
 database.connect().then(() => {
-  LOGGER.info(`로거 테스트`);
   //start();
-  //startScheduler1();
+  startScheduler();
 });
