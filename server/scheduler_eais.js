@@ -134,12 +134,13 @@ function saveData(startDate, endDate) {
 }
 
 // (timezone +9)
-// 매일 오전 10시 30분 마다 수집
+// 매일 오후 3시 10분 마다 수집
 function startScheduler1() {
-  var j = schedule.scheduleJob({ hour: 1, minute: 30 }, start);
+  var j = schedule.scheduleJob({ hour: 6, minute: 10 }, start);
 }
 
 function start() {
+  LOGGER.info(`시작`);
   init(bubjungdongList);
 }
 
