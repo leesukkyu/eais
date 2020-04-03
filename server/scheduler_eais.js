@@ -43,6 +43,9 @@ async function getArchInfoByList(list) {
       break;
     }
     await $httpGetArchInfo(list[i].code, startDate, endDate, 1);
+    // 매번 저장하자
+    saveData(startDate, endDate, saveDataList);
+    saveDataList = [];
     //await $httpGetArchInfo('1168010300', startDate, endDate, 1);
   }
   if (i >= list.length) {
@@ -50,8 +53,6 @@ async function getArchInfoByList(list) {
   } else {
     CURRENT_INDEX = i;
   }
-  //9000번을 요청했거나, 리스트를 다 돌은 경우에는 디비에 저장하기
-  saveData(startDate, endDate);
 }
 
 // 3. 서버와 통신해서 데이터를 가져온다.
@@ -122,7 +123,7 @@ function $httpGetArchInfo(code, startDate, endDate, pageNo) {
 }
 
 // 데이터베이스에 저장한다.
-function saveData(startDate, endDate) {
+function saveData(startDate, endDate, saveDataList) {
   fs.writeFileSync('./CURRENT_INDEX.json', JSON.stringify(CURRENT_INDEX));
   InfoModel.insertMany(saveDataList, { ordered: false }, function(err) {
     if (err && err.code != 11000) {
@@ -134,17 +135,22 @@ function saveData(startDate, endDate) {
 }
 
 // (timezone +9)
-// 매일 오후 3시 10분 마다 수집
+// 매일 오후 7시 15분 마다 수집
 function startScheduler1() {
-  var j = schedule.scheduleJob({ hour: 6, minute: 10 }, start);
+  var j = schedule.scheduleJob({ hour: 20, minute: 3 }, start);
 }
 
 function start() {
-  LOGGER.info(`시작`);
-  init(bubjungdongList);
+  try {
+    LOGGER.info(`시작`);
+    init(bubjungdongList);
+  } catch (error) {
+    LOGGER.info(`에러 ------- ${error}`);
+  }
 }
 
 database.connect().then(() => {
+  LOGGER.info(`로거 테스트`);
   //start();
-  startScheduler1();
+  //startScheduler1();
 });
