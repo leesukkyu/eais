@@ -8,7 +8,6 @@ import Icon from '@material-ui/core/Icon';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -19,13 +18,12 @@ import TableFooter from '@material-ui/core/TableFooter';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 
+import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 
 import bubjungdongList from './public/ADDRESS_DB.json';
 
 import moment from 'moment';
-
-import TablePagination from '@material-ui/core/TablePagination';
 
 import {
   SIDO_CODE_URL,
@@ -252,7 +250,7 @@ class App extends React.Component {
           pageNo: tablePage === 0 ? 1 : tablePage,
         },
       })
-      .then(rs => {
+      .then((rs) => {
         if (rs.data.items[0]) {
           this.setState({
             ...this.state,
@@ -305,7 +303,7 @@ class App extends React.Component {
 
     return (
       <div>
-        <div style={{ position: 'fixed', width: '100%', top: '60px', zIndex: 1 }}>
+        <div style={{ position: 'fixed', width: '100%', top: '48px', zIndex: 1 }}>
           {isLoading ? <LinearProgress variant="query" /> : null}
         </div>
         <div style={{ padding: '25px' }}>
@@ -334,7 +332,7 @@ class App extends React.Component {
               }}
               className="mr-2"
               value={state.sidoCode}
-              onChange={e => {
+              onChange={(e) => {
                 this.handleChange('sidoCode', e);
               }}
             >
@@ -353,7 +351,7 @@ class App extends React.Component {
                 marginRight: '10px',
               }}
               value={state.sigoonCode}
-              onChange={e => {
+              onChange={(e) => {
                 this.handleChange('sigoonCode', e);
               }}
             >
@@ -372,7 +370,7 @@ class App extends React.Component {
                 marginRight: '20px',
               }}
               value={state.dongCode}
-              onChange={e => {
+              onChange={(e) => {
                 this.handleChange('dongCode', e);
               }}
             >
@@ -393,13 +391,13 @@ class App extends React.Component {
             <Input
               placeholder="주소"
               value={searchStr}
-              onChange={e => {
+              onChange={(e) => {
                 this.setState({
                   ...this.state,
                   searchStr: e.target.value,
                 });
               }}
-              onKeyUp={e => {
+              onKeyUp={(e) => {
                 if (e.keyCode === 13) {
                   this.onClickBubjungdongSearchBtn();
                 }

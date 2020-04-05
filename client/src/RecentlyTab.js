@@ -5,7 +5,6 @@ import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,19 +13,26 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Grid from '@material-ui/core/Grid';
-
 import LinearProgress from '@material-ui/core/LinearProgress';
-
 import Paper from '@material-ui/core/Paper';
+import { ArrowDropDownOutlined } from '@material-ui/icons';
 
 import moment from 'moment';
-
+import classnames from 'classnames';
+import styled from 'styled-components';
 import { COLLECTION_SEARCH_URL } from './public/CONFIG';
 
 moment.locale('ko', {
   weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
   weekdaysShort: ['일', '월', '화', '수', '목', '금', '토'],
 });
+
+const SearchBtn = styled.button`
+  color: ${(props) => (props.active ? '#db7093' : '#000000de')};
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+`;
 
 class RecentlyTab extends React.Component {
   constructor(props) {
@@ -47,6 +53,7 @@ class RecentlyTab extends React.Component {
         prevPage: null,
         nextPage: 1,
       },
+      searchType: 'crtnDay',
     };
 
     this.onClickLoadBtn = this.onClickLoadBtn.bind(this);
@@ -56,8 +63,7 @@ class RecentlyTab extends React.Component {
     this.onClickLoadBtn();
   }
 
-  // 검색하기 누른 경우
-  onClickLoadBtn() {
+  fetchSearchList() {
     let page;
     page = this.state.rs.nextPage;
     if (page) {
@@ -65,15 +71,52 @@ class RecentlyTab extends React.Component {
         ...this.state,
         isLoading: true,
       });
-      axios.get(`${COLLECTION_SEARCH_URL}/${page}`).then(rs => {
-        this.state.tableList = this.state.tableList.concat(rs.data.docs);
-        this.setState({
-          ...this.state,
-          isLoading: false,
-          rs: rs.data,
+      axios
+        .get(`${COLLECTION_SEARCH_URL}/${page}`, {
+          params: {
+            sortType: this.state.searchType,
+          },
+        })
+        .then((rs) => {
+          this.state.tableList = this.state.tableList.concat(rs.data.docs);
+          this.setState({
+            ...this.state,
+            isLoading: false,
+            rs: rs.data,
+          });
         });
-      });
     }
+  }
+
+  // 검색하기 누른 경우
+  onClickLoadBtn() {
+    this.fetchSearchList();
+  }
+
+  onClickSortBtn(searchType) {
+    this.setState(
+      {
+        isModalOpen: false,
+        isLoading: false,
+        tableList: [],
+        rs: {
+          docs: [],
+          totalDocs: null,
+          limit: null,
+          totalPages: null,
+          page: null,
+          pagingCounter: null,
+          hasPrevPage: null,
+          hasNextPage: null,
+          prevPage: null,
+          nextPage: 1,
+        },
+        searchType: searchType,
+      },
+      () => {
+        this.fetchSearchList();
+      },
+    );
   }
 
   onClickModalOpenBtn(item) {
@@ -86,11 +129,11 @@ class RecentlyTab extends React.Component {
   }
 
   render() {
-    const { tableList, isLoading, isModalOpen } = this.state;
+    const { tableList, isLoading, isModalOpen, searchType } = this.state;
     const { hasNextPage } = this.state.rs;
     return (
       <React.Fragment>
-        <div style={{ position: 'fixed', width: '100%', top: '60px', zIndex: 1 }}>
+        <div style={{ position: 'fixed', width: '100%', top: '48px', zIndex: 1 }}>
           {isLoading ? <LinearProgress variant="query" /> : null}
         </div>
         <TableContainer
@@ -121,9 +164,31 @@ class RecentlyTab extends React.Component {
                 <TableCell>착공예정일</TableCell>
                 <TableCell>착공연기일</TableCell>
                 <TableCell>실제착공일</TableCell>
-                <TableCell>건축허가일</TableCell>
+                <TableCell>
+                  <SearchBtn
+                    type="button"
+                    active={searchType === 'archPmsDay'}
+                    onClick={() => {
+                      this.onClickSortBtn('archPmsDay');
+                    }}
+                  >
+                    건축허가일
+                    <ArrowDropDownOutlined></ArrowDropDownOutlined>
+                  </SearchBtn>
+                </TableCell>
                 <TableCell>사용승인일</TableCell>
-                <TableCell>생성일자</TableCell>
+                <TableCell>
+                  <SearchBtn
+                    type="button"
+                    active={searchType === 'crtnDay'}
+                    onClick={() => {
+                      this.onClickSortBtn('crtnDay');
+                    }}
+                  >
+                    생성일자
+                    <ArrowDropDownOutlined></ArrowDropDownOutlined>
+                  </SearchBtn>
+                </TableCell>
 
                 <TableCell>수집일</TableCell>
                 <TableCell></TableCell>

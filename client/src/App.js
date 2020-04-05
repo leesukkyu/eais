@@ -49,8 +49,8 @@ export default function SimpleTabs() {
     <React.Fragment>
       <AppBar position="static">
         <Tabs value={value} onChange={handleChange}>
-          <Tab label="지역 검색하기 (실시간 조회)" />
-          <Tab label="전국 최신 데이터 보기 (매주 목요일/금요일 수집 데이터 조회)" />
+          <Tab label="지역 검색하기" />
+          <Tab label="전국 최신 데이터 보기" />
         </Tabs>
       </AppBar>
       <TabPanel className={classes.tabPanel} value={value} index={0}>
