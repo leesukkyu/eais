@@ -18,9 +18,8 @@ import Paper from '@material-ui/core/Paper';
 import { ArrowDropDownOutlined } from '@material-ui/icons';
 
 import moment from 'moment';
-import classnames from 'classnames';
 import styled from 'styled-components';
-import { COLLECTION_SEARCH_URL } from './public/CONFIG';
+import { SERVER_URL } from './public/CONFIG';
 
 moment.locale('ko', {
   weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
@@ -72,7 +71,7 @@ class RecentlyTab extends React.Component {
         isLoading: true,
       });
       axios
-        .get(`${COLLECTION_SEARCH_URL}/${page}`, {
+        .get(`${SERVER_URL}/api/collection/${page}`, {
           params: {
             sortType: this.state.searchType,
           },

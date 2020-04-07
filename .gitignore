@@ -108,4 +108,6 @@ config
 key
 .history
 .vscode
-# CONFIG.js
+CONFIG.js
+CURRENT_INDEX
+client/src/public/CONFIG.js

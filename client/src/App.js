@@ -1,21 +1,22 @@
-import React from "react";
+import React from 'react';
 
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-import PropTypes from "prop-types";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
+import PropTypes from 'prop-types';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
-import RecentlyTab from "./RecentlyTab";
-import SearchTab from "./SearchTab";
+import RecentlyTab from './RecentlyTab';
+import SearchTab from './SearchTab';
+import DownloadTab from './DownloadTab';
 
 const useStyles = makeStyles({
   tabPanel: {
-    height: "calc(100% - 48px)"
-  }
+    height: 'calc(100% - 48px)',
+  },
 });
 
 function TabPanel(props) {
@@ -35,7 +36,7 @@ function TabPanel(props) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 export default function SimpleTabs() {
@@ -51,6 +52,7 @@ export default function SimpleTabs() {
         <Tabs value={value} onChange={handleChange}>
           <Tab label="지역 검색하기" />
           <Tab label="전국 최신 데이터 보기" />
+          <Tab label="엑셀 다운로드" />
         </Tabs>
       </AppBar>
       <TabPanel className={classes.tabPanel} value={value} index={0}>
@@ -58,6 +60,9 @@ export default function SimpleTabs() {
       </TabPanel>
       <TabPanel className={classes.tabPanel} value={value} index={1}>
         <RecentlyTab></RecentlyTab>
+      </TabPanel>
+      <TabPanel className={classes.tabPanel} value={value} index={2}>
+        <DownloadTab></DownloadTab>
       </TabPanel>
     </React.Fragment>
   );

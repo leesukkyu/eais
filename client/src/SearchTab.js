@@ -32,7 +32,7 @@ import {
   SIGOON_CODE_KEY,
   DONG_CODE_URL,
   DONG_CODE_KEY,
-  SEARCH_URL,
+  SERVER_URL,
   SEARCH_KEY,
 } from './public/CONFIG';
 
@@ -234,9 +234,8 @@ class App extends React.Component {
       isLoading: true,
     });
     axios
-      .get(SEARCH_URL, {
+      .get(`${SERVER_URL}/api/search`, {
         params: {
-          serviceKey: decodeURIComponent(SEARCH_KEY),
           sigunguCd: searchCode.slice(0, 5),
           bjdongCd: searchCode.slice(5, 10),
           platGbCd: '0',
