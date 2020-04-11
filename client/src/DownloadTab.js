@@ -47,7 +47,7 @@ class App extends React.Component {
     const type = this.state.type;
     const startDate = moment(this.state.startDate).format('YYYYMMDD');
     const endDate = moment(this.state.endDate).format('YYYYMMDD');
-    window.open(`http://localhost:5500/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}`);
+    window.open(`/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}`);
   };
 
   render() {
