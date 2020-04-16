@@ -16,10 +16,11 @@ import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import { ArrowDropDownOutlined } from '@material-ui/icons';
+import NativeSelect from '@material-ui/core/NativeSelect';
 
 import moment from 'moment';
 import styled from 'styled-components';
-import { SERVER_URL } from './public/CONFIG';
+import { SIDO_CODE_URL, SIDO_CODE_KEY, SIGOON_CODE_URL, SIGOON_CODE_KEY, SERVER_URL } from './public/CONFIG';
 
 moment.locale('ko', {
   weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
@@ -37,6 +38,10 @@ class RecentlyTab extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      sidoCode: '',
+      sidoList: [],
+      sigoonCode: '',
+      sigoonList: [],
       isModalOpen: false,
       isLoading: false,
       tableList: [],
@@ -60,6 +65,49 @@ class RecentlyTab extends React.Component {
 
   componentDidMount() {
     this.onClickLoadBtn();
+    this.$httpLoadSidoCodeList();
+  }
+
+  // 시/도 선택
+  $httpLoadSidoCodeList() {
+    this.setState({
+      isLoading: true,
+    });
+    axios
+      .get(SIDO_CODE_URL, {
+        params: { authkey: SIDO_CODE_KEY },
+      })
+      .then(({ data }) => {
+        this.setState({
+          isLoading: false,
+          sidoCode: '',
+          sidoList: data.admVOList.admVOList,
+          sigoonCode: '',
+          sigoonList: [],
+        });
+      });
+  }
+
+  // 시/군 선택
+  $httpLoadSigoonCodeList() {
+    const { sidoCode } = this.state;
+    this.setState({
+      isLoading: true,
+    });
+    axios
+      .get(SIGOON_CODE_URL, {
+        params: {
+          admCode: sidoCode,
+          authkey: SIGOON_CODE_KEY,
+        },
+      })
+      .then(({ data }) => {
+        this.setState({
+          isLoading: false,
+          sigoonCode: '',
+          sigoonList: data.admVOList.admVOList,
+        });
+      });
   }
 
   fetchSearchList() {
@@ -67,19 +115,18 @@ class RecentlyTab extends React.Component {
     page = this.state.rs.nextPage;
     if (page) {
       this.setState({
-        ...this.state,
         isLoading: true,
       });
       axios
         .get(`${SERVER_URL}/api/collection/${page}`, {
           params: {
+            sigunguCd: this.state.sigoonCode,
             sortType: this.state.searchType,
           },
         })
         .then((rs) => {
           this.state.tableList = this.state.tableList.concat(rs.data.docs);
           this.setState({
-            ...this.state,
             isLoading: false,
             rs: rs.data,
           });
@@ -95,6 +142,10 @@ class RecentlyTab extends React.Component {
   onClickSortBtn(searchType) {
     this.setState(
       {
+        sidoCode: '',
+        sidoList: '',
+        sigoonCode: '',
+        sigoonList: '',
         isModalOpen: false,
         isLoading: false,
         tableList: [],
@@ -122,13 +173,47 @@ class RecentlyTab extends React.Component {
     console.log(this);
     console.log(item);
     this.setState({
-      ...this.state,
       isModalOpen: true,
     });
   }
 
+  handleChange = (name, event) => {
+    this.setState(
+      {
+        [name]: event.target.value,
+      },
+      () => {
+        if (name === 'sidoCode') {
+          this.$httpLoadSigoonCodeList();
+        } else if (name === 'sigoonCode') {
+          this.setState(
+            {
+              tableList: [],
+              rs: {
+                docs: [],
+                totalDocs: null,
+                limit: null,
+                totalPages: null,
+                page: null,
+                pagingCounter: null,
+                hasPrevPage: null,
+                hasNextPage: null,
+                prevPage: null,
+                nextPage: 1,
+              },
+            },
+            () => {
+              this.fetchSearchList();
+            },
+          );
+        }
+      },
+    );
+  };
+
   render() {
     const { tableList, isLoading, isModalOpen, searchType } = this.state;
+    const { sidoCode, sidoList, sigoonCode, sigoonList } = this.state;
     const { hasNextPage } = this.state.rs;
     return (
       <React.Fragment>
@@ -144,6 +229,46 @@ class RecentlyTab extends React.Component {
             padding: '0',
           }}
         >
+          <div>
+            <NativeSelect
+              style={{
+                marginRight: '10px',
+              }}
+              className="mr-2"
+              value={sidoCode}
+              onChange={(e) => {
+                this.handleChange('sidoCode', e);
+              }}
+            >
+              <option>시/도 선택</option>
+              {sidoList.map((item, index) => {
+                return (
+                  <option key={index} value={item.admCode}>
+                    {item.admCodeNm}
+                  </option>
+                );
+              })}
+            </NativeSelect>
+
+            <NativeSelect
+              style={{
+                marginRight: '10px',
+              }}
+              value={sigoonCode}
+              onChange={(e) => {
+                this.handleChange('sigoonCode', e);
+              }}
+            >
+              <option>시/군 선택</option>
+              {sigoonList.map((item, index) => {
+                return (
+                  <option key={index} value={item.admCode}>
+                    {item.admCodeNm}
+                  </option>
+                );
+              })}
+            </NativeSelect>
+          </div>
           <Table>
             <TableHead>
               <TableRow>

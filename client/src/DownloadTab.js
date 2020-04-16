@@ -15,8 +15,9 @@ import Select from '@material-ui/core/Select';
 import DescriptionIcon from '@material-ui/icons/Description';
 import IconButton from '@material-ui/core/IconButton';
 import MomentUtils from '@date-io/moment';
+import NativeSelect from '@material-ui/core/NativeSelect';
 
-import { SERVER_URL } from './public/CONFIG';
+import { SIDO_CODE_URL, SIDO_CODE_KEY, SIGOON_CODE_URL, SIGOON_CODE_KEY, SERVER_URL } from './public/CONFIG';
 
 moment.locale('ko');
 
@@ -28,8 +29,72 @@ class App extends React.Component {
       startDate: new Date(),
       endDate: new Date(),
       type: 'crtnDay',
+      sidoCode: '',
+      sidoList: [],
+      sigoonCode: '',
+      sigoonList: [],
     };
   }
+
+  componentDidMount() {
+    this.$httpLoadSidoCodeList();
+  }
+
+  // 시/도 선택
+  $httpLoadSidoCodeList() {
+    this.setState({
+      isLoading: true,
+    });
+    axios
+      .get(SIDO_CODE_URL, {
+        params: { authkey: SIDO_CODE_KEY },
+      })
+      .then(({ data }) => {
+        this.setState({
+          isLoading: false,
+          sidoCode: '',
+          sidoList: data.admVOList.admVOList,
+          sigoonCode: '',
+          sigoonList: [],
+        });
+      });
+  }
+
+  // 시/군 선택
+  $httpLoadSigoonCodeList() {
+    const { sidoCode } = this.state;
+    this.setState({
+      isLoading: true,
+    });
+    axios
+      .get(SIGOON_CODE_URL, {
+        params: {
+          admCode: sidoCode,
+          authkey: SIGOON_CODE_KEY,
+        },
+      })
+      .then(({ data }) => {
+        this.setState({
+          isLoading: false,
+          sigoonCode: '',
+          sigoonList: data.admVOList.admVOList,
+        });
+      });
+  }
+
+  handleChange = (name, event) => {
+    this.setState(
+      {
+        [name]: event.target.value,
+      },
+      () => {
+        if (name === 'sidoCode') {
+          this.$httpLoadSigoonCodeList();
+        } else if (name === 'sigoonCode') {
+        }
+      },
+    );
+  };
 
   handleDateChange = (date, type) => {
     this.setState({
@@ -44,14 +109,19 @@ class App extends React.Component {
   };
 
   fetchFile = () => {
-    const type = this.state.type;
+    const { type, sigoonCode } = this.state;
     const startDate = moment(this.state.startDate).format('YYYYMMDD');
     const endDate = moment(this.state.endDate).format('YYYYMMDD');
-    window.open(`/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}`);
+    if (sigoonCode) {
+      window.open(`${SERVER_URL}/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}&sigoonCode=${sigoonCode}`);
+    } else {
+      window.open(`${SERVER_URL}/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}`);
+    }
   };
 
   render() {
     const { isLoading, startDate, endDate, type } = this.state;
+    const { sidoCode, sidoList, sigoonCode, sigoonList } = this.state;
     return (
       <div>
         <div style={{ position: 'fixed', width: '100%', top: '48px', zIndex: 1 }}>
@@ -59,6 +129,46 @@ class App extends React.Component {
         </div>
         <div style={{ padding: '25px' }}>
           <div style={{ margin: '10px' }}>
+            <div>
+              <NativeSelect
+                style={{
+                  marginRight: '10px',
+                }}
+                className="mr-2"
+                value={sidoCode}
+                onChange={(e) => {
+                  this.handleChange('sidoCode', e);
+                }}
+              >
+                <option>시/도 선택</option>
+                {sidoList.map((item, index) => {
+                  return (
+                    <option key={index} value={item.admCode}>
+                      {item.admCodeNm}
+                    </option>
+                  );
+                })}
+              </NativeSelect>
+
+              <NativeSelect
+                style={{
+                  marginRight: '10px',
+                }}
+                value={sigoonCode}
+                onChange={(e) => {
+                  this.handleChange('sigoonCode', e);
+                }}
+              >
+                <option>시/군 선택</option>
+                {sigoonList.map((item, index) => {
+                  return (
+                    <option key={index} value={item.admCode}>
+                      {item.admCodeNm}
+                    </option>
+                  );
+                })}
+              </NativeSelect>
+            </div>
             <FormControl style={{ margin: '16px 20px 8px' }}>
               <InputLabel id="demo-simple-select-label">검색조건</InputLabel>
               <Select

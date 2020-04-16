@@ -76,7 +76,6 @@ class App extends React.Component {
   onClickChips(item) {
     this.setState(
       {
-        ...this.state,
         tableList: [],
         tablePage: 0,
         searchCode: item.code,
@@ -101,7 +100,6 @@ class App extends React.Component {
       }
     }
     this.setState({
-      ...this.state,
       searchResultList,
     });
   }
@@ -109,7 +107,6 @@ class App extends React.Component {
   onClickSelectSearchBtn() {
     this.setState(
       {
-        ...this.state,
         searchStr: '',
         searchResultList: [],
         tableList: [],
@@ -139,7 +136,6 @@ class App extends React.Component {
     if (searchCode) {
       this.setState(
         {
-          ...this.state,
           searchMonth: e.target.value,
           tableList: [],
           tablePage: 0,
@@ -150,7 +146,6 @@ class App extends React.Component {
       );
     } else {
       this.setState({
-        ...this.state,
         searchMonth: e.target.value,
       });
     }
@@ -158,7 +153,6 @@ class App extends React.Component {
 
   $httpLoadSidoCodeList() {
     this.setState({
-      ...this.state,
       isLoading: true,
     });
     axios
@@ -167,7 +161,6 @@ class App extends React.Component {
       })
       .then(({ data }) => {
         this.setState({
-          ...this.state,
           isLoading: false,
           sidoList: data.admVOList.admVOList,
           sidoCode: '',
@@ -182,7 +175,6 @@ class App extends React.Component {
   $httpLoadSigoonCodeList() {
     const { sidoCode } = this.state;
     this.setState({
-      ...this.state,
       isLoading: true,
     });
     axios
@@ -194,7 +186,6 @@ class App extends React.Component {
       })
       .then(({ data }) => {
         this.setState({
-          ...this.state,
           isLoading: false,
           sigoonCode: '',
           sigoonList: data.admVOList.admVOList,
@@ -207,7 +198,6 @@ class App extends React.Component {
   $httpLoadDongCodeList() {
     const { sigoonCode } = this.state;
     this.setState({
-      ...this.state,
       isLoading: true,
     });
     axios
@@ -219,7 +209,6 @@ class App extends React.Component {
       })
       .then(({ data }) => {
         this.setState({
-          ...this.state,
           isLoading: false,
           dongCode: '',
           dongList: data.admVOList.admVOList,
@@ -230,7 +219,6 @@ class App extends React.Component {
   $httpLoadArchInfo() {
     const { searchCode, tablePage, searchMonth } = this.state;
     this.setState({
-      ...this.state,
       isLoading: true,
     });
     axios
@@ -252,14 +240,12 @@ class App extends React.Component {
       .then((rs) => {
         if (rs.data.items[0]) {
           this.setState({
-            ...this.state,
             isLoading: false,
             tableList: rs.data.items[0].item,
             tableTotalCount: rs.data.totalCount[0],
           });
         } else {
           this.setState({
-            ...this.state,
             isLoading: false,
             tableList: [],
             tableTotalCount: 0,
@@ -271,7 +257,6 @@ class App extends React.Component {
   handleChange(name, event) {
     this.setState(
       {
-        ...this.state,
         [name]: event.target.value,
       },
       () => {
@@ -392,7 +377,6 @@ class App extends React.Component {
               value={searchStr}
               onChange={(e) => {
                 this.setState({
-                  ...this.state,
                   searchStr: e.target.value,
                 });
               }}

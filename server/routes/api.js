@@ -33,13 +33,16 @@ router.get('/search', function (req, res, next) {
 
 // 일자별 조회
 router.get('/collection/:page', function (req, res, next) {
-  let page, query;
+  let query = {};
+  const { page } = req.params;
+  const { sigunguCd, sortType } = req.query;
 
-  query = {};
-  page = req.params.page;
+  if (sigunguCd) {
+    query['sigunguCd'] = sigunguCd;
+  }
 
   const options = {
-    sort: { [req.query.sortType]: -1 },
+    sort: { [sortType]: -1 },
     limit: 10,
     page: page ? page : 1,
   };
@@ -103,8 +106,19 @@ router.get('/filedownload', function (req, res, next) {
     vlRatEstmTotArea: '용적률산적면적',
     time: '우리측 수집일',
   };
-  Info.find({ [type]: { $gte: startDate, $lte: endDate } })
+
+  const query = { [type]: { $gte: startDate, $lte: endDate } };
+  
+  if (req.query.sigoonCode) {
+    query['sigoonCode'] = sigoonCode;
+    console.log('시군구 필터 다운로드');
+  }
+  
+  console.log(query);
+  
+  Info.find(query)
     .then((docs) => {
+      console.log(query);
       const result = docs.map((item) => {
         var obj = {};
         for (var i in item._doc) {
