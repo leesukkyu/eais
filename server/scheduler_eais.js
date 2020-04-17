@@ -141,7 +141,7 @@ function saveData(startDate, endDate, saveDataList) {
 // (timezone +9)
 // 매일 오후 2시 30분 마다 수집
 function startScheduler() {
-  var j = schedule.scheduleJob({ hour: 5, minute: 30 }, start);
+  var j = schedule.scheduleJob({ hour: 8, minute: 50 }, start);
 }
 
 function start() {
