@@ -40,7 +40,7 @@ class App extends React.Component {
     this.$httpLoadSidoCodeList();
   }
 
-  // 시/도 선택
+  // 시/도 불러오기
   $httpLoadSidoCodeList() {
     this.setState({
       isLoading: true,
@@ -60,7 +60,7 @@ class App extends React.Component {
       });
   }
 
-  // 시/군 선택
+  // 시/군 불러오기
   $httpLoadSigoonCodeList() {
     const { sidoCode } = this.state;
     this.setState({
@@ -109,11 +109,13 @@ class App extends React.Component {
   };
 
   fetchFile = () => {
-    const { type, sigoonCode } = this.state;
+    const { type, sigoonCode, sidoCode } = this.state;
     const startDate = moment(this.state.startDate).format('YYYYMMDD');
     const endDate = moment(this.state.endDate).format('YYYYMMDD');
-    if (sigoonCode) {
-      window.open(`${SERVER_URL}/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}&sigoonCode=${sigoonCode}`);
+    if (sidoCode || sigoonCode) {
+      window.open(
+        `${SERVER_URL}/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}&sigunguCd=${sigoonCode}&sidoCd=${sidoCode}`,
+      );
     } else {
       window.open(`${SERVER_URL}/api/filedownload?type=${type}&startDate=${startDate}&endDate=${endDate}`);
     }
@@ -140,7 +142,7 @@ class App extends React.Component {
                   this.handleChange('sidoCode', e);
                 }}
               >
-                <option>시/도 선택</option>
+                <option value="">시/도 선택</option>
                 {sidoList.map((item, index) => {
                   return (
                     <option key={index} value={item.admCode}>
@@ -159,7 +161,7 @@ class App extends React.Component {
                   this.handleChange('sigoonCode', e);
                 }}
               >
-                <option>시/군 선택</option>
+                <option value="">전체</option>
                 {sigoonList.map((item, index) => {
                   return (
                     <option key={index} value={item.admCode}>

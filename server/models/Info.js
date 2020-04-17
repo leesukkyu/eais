@@ -41,6 +41,7 @@ var schema = new Schema({
   platPlc: String, // 대지위치
   realStcnsDay: String, // 실제착공일
   rnum: String, // 순번
+  sidoCd:String,  // 시도 코드
   sigunguCd: String, // 시군구코드
   splotNm: String, // 특수지명
   stcnsDelayDay: String, // 착공연기일

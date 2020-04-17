@@ -120,6 +120,7 @@ class RecentlyTab extends React.Component {
       axios
         .get(`${SERVER_URL}/api/collection/${page}`, {
           params: {
+            sidoCd: this.state.sidoCode,
             sigunguCd: this.state.sigoonCode,
             sortType: this.state.searchType,
           },
@@ -177,6 +178,29 @@ class RecentlyTab extends React.Component {
     });
   }
 
+  onClickFilterBtn = () => {
+    this.setState(
+      {
+        tableList: [],
+        rs: {
+          docs: [],
+          totalDocs: null,
+          limit: null,
+          totalPages: null,
+          page: null,
+          pagingCounter: null,
+          hasPrevPage: null,
+          hasNextPage: null,
+          prevPage: null,
+          nextPage: 1,
+        },
+      },
+      () => {
+        this.fetchSearchList();
+      },
+    );
+  };
+
   handleChange = (name, event) => {
     this.setState(
       {
@@ -186,26 +210,6 @@ class RecentlyTab extends React.Component {
         if (name === 'sidoCode') {
           this.$httpLoadSigoonCodeList();
         } else if (name === 'sigoonCode') {
-          this.setState(
-            {
-              tableList: [],
-              rs: {
-                docs: [],
-                totalDocs: null,
-                limit: null,
-                totalPages: null,
-                page: null,
-                pagingCounter: null,
-                hasPrevPage: null,
-                hasNextPage: null,
-                prevPage: null,
-                nextPage: 1,
-              },
-            },
-            () => {
-              this.fetchSearchList();
-            },
-          );
         }
       },
     );
@@ -229,7 +233,7 @@ class RecentlyTab extends React.Component {
             padding: '0',
           }}
         >
-          <div>
+          <div style={{ padding: '10px' }}>
             <NativeSelect
               style={{
                 marginRight: '10px',
@@ -240,7 +244,7 @@ class RecentlyTab extends React.Component {
                 this.handleChange('sidoCode', e);
               }}
             >
-              <option>시/도 선택</option>
+              <option value="">시/도 선택</option>
               {sidoList.map((item, index) => {
                 return (
                   <option key={index} value={item.admCode}>
@@ -259,7 +263,7 @@ class RecentlyTab extends React.Component {
                 this.handleChange('sigoonCode', e);
               }}
             >
-              <option>시/군 선택</option>
+              <option value="">전체</option>
               {sigoonList.map((item, index) => {
                 return (
                   <option key={index} value={item.admCode}>
@@ -268,6 +272,9 @@ class RecentlyTab extends React.Component {
                 );
               })}
             </NativeSelect>
+            <Button onClick={this.onClickFilterBtn} variant="contained" color="primary">
+              적용
+            </Button>
           </div>
           <Table>
             <TableHead>

@@ -32,9 +32,7 @@ function init(list) {
 // 2. 리스트를 돌면서 하나씩 통신해서 데이터를 가져온다. 이때 요청은 동기로 진행된다.
 async function getArchInfoByList(list) {
   // 조회 기간은 오늘부터 3개월 전으로 한다.
-  const startDate = moment()
-    .subtract(3, 'months')
-    .format('YYYYMMDD');
+  const startDate = moment().subtract(3, 'months').format('YYYYMMDD');
 
   const endDate = moment().format('YYYYMMDD');
   var i = CURRENT_INDEX;
@@ -77,7 +75,7 @@ function $httpGetArchInfo(code, startDate, endDate, pageNo) {
         },
       },
       // 실패 하더라도 일단 무조건 넘어가야 함.
-      function(error, response, body) {
+      function (error, response, body) {
         if (!error) {
           if (response.statusCode === 200) {
             let items;
@@ -85,13 +83,16 @@ function $httpGetArchInfo(code, startDate, endDate, pageNo) {
             items = body.slice(body.indexOf('<items>'), body.lastIndexOf('</items>') + 8);
             if (items) {
               // xml 파싱
-              parseString(items, async function(err, result) {
+              parseString(items, async function (err, result) {
                 if (!err) {
                   result.items.item.forEach((elem, index) => {
                     const data = elem;
                     let item = {};
                     for (var j in data) {
                       item[j] = data[j][0];
+                    }
+                    if (item.sigunguCd) {
+                      item.sidoCd = item.sigunguCd.slice(0, 2);
                     }
                     saveDataList.push(item);
                   });
@@ -126,7 +127,7 @@ function $httpGetArchInfo(code, startDate, endDate, pageNo) {
 // 데이터베이스에 저장한다.
 function saveData(startDate, endDate, saveDataList) {
   fs.writeFileSync('./CURRENT_INDEX.json', JSON.stringify(CURRENT_INDEX));
-  InfoModel.insertMany(saveDataList, { ordered: false }, function(err) {
+  InfoModel.insertMany(saveDataList, { ordered: false }, function (err) {
     if (err && err.code != 11000) {
       LOGGER.info(`${startDate} ~ ${endDate} : 데이터베이스 저장 실패1`);
     } else if (err) {

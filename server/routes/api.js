@@ -35,10 +35,19 @@ router.get('/search', function (req, res, next) {
 router.get('/collection/:page', function (req, res, next) {
   let query = {};
   const { page } = req.params;
-  const { sigunguCd, sortType } = req.query;
+  const { sidoCd, sigunguCd, sortType } = req.query;
 
+  // 구까지 검색한 경우
   if (sigunguCd) {
-    query['sigunguCd'] = sigunguCd;
+    query['sigunguCd'] = {
+      $eq: sigunguCd,
+    };
+  }
+  // 시만 검색한 경우
+  else if (sidoCd) {
+    query['sidoCd'] = {
+      $eq: sidoCd,
+    };
   }
 
   const options = {
@@ -107,15 +116,13 @@ router.get('/filedownload', function (req, res, next) {
     time: '우리측 수집일',
   };
 
-  const query = { [type]: { $gte: startDate, $lte: endDate } };
-  
-  if (req.query.sigoonCode) {
-    query['sigoonCode'] = sigoonCode;
-    console.log('시군구 필터 다운로드');
+  let query = { [type]: { $gte: startDate, $lte: endDate } };
+  const { sigunguCd, sidoCd } = req.query;
+  if (sigunguCd) {
+    query['sigunguCd'] = { $eq: sigunguCd };
+  } else if (sidoCd) {
+    query['sidoCd'] = { $eq: sidoCd };
   }
-  
-  console.log(query);
-  
   Info.find(query)
     .then((docs) => {
       console.log(query);
