@@ -144,9 +144,9 @@ class RecentlyTab extends React.Component {
     this.setState(
       {
         sidoCode: '',
-        sidoList: '',
+        sidoList: [],
         sigoonCode: '',
-        sigoonList: '',
+        sigoonList: [],
         isModalOpen: false,
         isLoading: false,
         tableList: [],
@@ -217,7 +217,7 @@ class RecentlyTab extends React.Component {
 
   render() {
     const { tableList, isLoading, isModalOpen, searchType } = this.state;
-    const { sidoCode, sidoList, sigoonCode, sigoonList } = this.state;
+    const { sidoCode, sidoList = [], sigoonCode, sigoonList = [] } = this.state;
     const { hasNextPage } = this.state.rs;
     return (
       <React.Fragment>
@@ -282,6 +282,7 @@ class RecentlyTab extends React.Component {
                 <TableCell>대지위치</TableCell>
                 <TableCell>건물명</TableCell>
                 <TableCell>특수지명</TableCell>
+                <TableCell>건축구분</TableCell>
 
                 <TableCell>지목코드명</TableCell>
                 <TableCell>지역코드명</TableCell>
@@ -331,6 +332,7 @@ class RecentlyTab extends React.Component {
                   <TableCell>{item.platPlc}</TableCell>
                   <TableCell>{item.bldNm}</TableCell>
                   <TableCell>{item.splotNm}</TableCell>
+                  <TableCell>{item.archGbCdNm}</TableCell>
 
                   <TableCell>{item.jimokCdNm}</TableCell>
                   <TableCell>{item.jiyukCdNm}</TableCell>

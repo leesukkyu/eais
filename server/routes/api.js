@@ -125,7 +125,6 @@ router.get('/filedownload', function (req, res, next) {
   }
   Info.find(query)
     .then((docs) => {
-      console.log(query);
       const result = docs.map((item) => {
         var obj = {};
         for (var i in item._doc) {
