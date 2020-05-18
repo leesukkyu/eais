@@ -116,6 +116,27 @@ router.get('/filedownload', function (req, res, next) {
     time: '우리측 수집일',
   };
 
+  const EXCEL_ROW_LIST = [
+    'platPlc',
+    'bldNm',
+    'splotNm',
+    'archGbCdNm',
+    'jimokCdNm',
+    'jiyukCdNm',
+    'jiguCdNm',
+    'platArea',
+    'archArea',
+    'bcRat',
+    'totArea',
+    'stcnsSchedDay',
+    'stcnsDelayDay',
+    'realStcnsDay',
+    'archPmsDay',
+    'useAprDay',
+    'crtnDay',
+    'time',
+  ];
+
   let query = { [type]: { $gte: startDate, $lte: endDate } };
   const { sigunguCd, sidoCd } = req.query;
   if (sigunguCd) {
@@ -125,17 +146,23 @@ router.get('/filedownload', function (req, res, next) {
   }
   Info.find(query)
     .then((docs) => {
-      const result = docs.map((item) => {
-        var obj = {};
-        for (var i in item._doc) {
-          key = KEY_MAP[i];
-          if (key) {
-            obj[key] = item._doc[i];
-          }
-        }
-        return obj;
-      });
-      res.xls('data.xlsx', result);
+      if (docs && docs.length) {
+        const result = docs.map((item) => {
+          var obj = {};
+          EXCEL_ROW_LIST.map((i) => {
+            key = KEY_MAP[i];
+            if (key) {
+              obj[key] = item._doc[i];
+            }
+          });
+          return obj;
+        });
+        res.xls('data.xlsx', result);
+      } else {
+        res.json({
+          result : '결과 데이터가 없습니다.'
+        });
+      }
     })
     .catch(() => {
       res.json([]);
